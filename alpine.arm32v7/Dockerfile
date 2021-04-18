@@ -3,7 +3,7 @@ ARG WIREGUARD_TOOLS_VERSION
 WORKDIR /root
 RUN curl -skL https://github.com/WireGuard/wireguard-tools/archive/refs/tags/v${WIREGUARD_TOOLS_VERSION}.tar.gz | tar -zxpf -
 
-FROM alpine:3 as wireguard-tools
+FROM arm32v7/alpine:3 as wireguard-tools
 RUN apk update && apk add bash build-base linux-headers && rm -rf /var/cache/apk/*
 COPY --from=wireguard-tools-src /root /root/
 WORKDIR /root
@@ -19,7 +19,7 @@ RUN curl -o /tmp/wg.zip -skL https://codeload.github.com/WireGuard/wireguard-go/
 	mkdir -p /go/src/github.com/WireGuard/ && unzip -d /go/src/github.com/WireGuard/ /tmp/wg.zip
 RUN mv /go/src/github.com/WireGuard/wireguard-go-${WIREGUARD_GO_VERSION} /go/src/github.com/WireGuard/wireguard-go
 
-FROM golang:1.16-alpine as wg-go
+FROM arm32v7/golang:1.16-alpine as wg-go
 RUN apk update && apk add make && rm -rf /var/cache/apk/*
 WORKDIR /go/src/github.com/WireGuard/wireguard-go
 COPY --from=wg-go-src /go/src/github.com/WireGuard/wireguard-go ./

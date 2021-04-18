@@ -1,0 +1,129 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wireguard-server
+spec:
+  ports:
+  - name: wireguard
+    port: 37000
+    protocol: UDP
+    targetPort: 37000
+  selector:
+    wireguard: server
+  type: ClusterIP
+---
+apiVersion: v1
+data:
+  wg0.conf: |
+    [Interface]
+    Address = 192.168.2.1/24
+    ListenPort = 37000
+    PrivateKey = INDRU2NpB/PRosC8fHosy4qRNALAh4PCalzD3A3PTm8=
+
+    [Peer]
+    PublicKey = zQbtTt08r4hqpeKpwrU05TYDcvtdItPTlRHSOAM8Jnk=
+    AllowedIPs = 192.168.2.0/24
+    Endpoint = wireguard-client:37001
+kind: ConfigMap
+metadata:
+  name: wireguard-server
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: wireguard-server
+  labels:
+    wireguard: server
+spec:
+  containers:
+  - image: docker.io/cloudtogo/wireguard-us:v0.0.20201119
+    imagePullPolicy: IfNotPresent
+    name: wireguard
+    ports:
+    - containerPort: 37000
+      name: wireguard
+      protocol: UDP
+    securityContext:
+      capabilities:
+        add: ["NET_ADMIN"]
+    env:
+    - name: WG_DEV
+      value: wg0
+    volumeMounts:
+    - mountPath: /dev/net/tun
+      name: tun
+    - mountPath: /etc/wireguard
+      name: config
+  volumes:
+  - hostPath:
+      path: /dev/net/tun
+      type: CharDevice
+    name: tun
+  - configMap:
+      name: wireguard-server
+    name: config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wireguard-client
+spec:
+  ports:
+  - name: wireguard
+    port: 37001
+    protocol: UDP
+    targetPort: 37001
+  selector:
+    wireguard: client
+  type: ClusterIP
+---
+apiVersion: v1
+data:
+  wg0.conf: |
+    [Interface]
+    Address = 192.168.2.2/24
+    ListenPort = 37001
+    PrivateKey = MBNgZK2YIK+CNWxxEXkBU5eidtRAXIzDa6UgXdb8xmQ=
+
+    [Peer]
+    PublicKey = HKGubJHizXG+z/xtpbD30jUryEP6l2udJ6o1PGRKcGc=
+    AllowedIPs = 192.168.2.0/24
+    Endpoint = wireguard-server:37000
+kind: ConfigMap
+metadata:
+  name: wireguard-client
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: wireguard-client
+  labels:
+    wireguard: client
+spec:
+  containers:
+  - image: docker.io/cloudtogo/wireguard-us:v0.0.20201119
+    imagePullPolicy: IfNotPresent
+    name: wireguard
+    ports:
+    - containerPort: 37001
+      name: wireguard
+      protocol: UDP
+    securityContext:
+      capabilities:
+        add: ["NET_ADMIN"]
+    env:
+    - name: WG_DEV
+      value: wg0
+    volumeMounts:
+    - mountPath: /dev/net/tun
+      name: tun
+    - mountPath: /etc/wireguard
+      name: config
+  volumes:
+  - hostPath:
+      path: /dev/net/tun
+      type: CharDevice
+    name: tun
+  - configMap:
+      name: wireguard-client
+    name: config

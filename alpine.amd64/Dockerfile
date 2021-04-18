@@ -8,6 +8,22 @@ ENV DESTDIR=/root/output
 ENV WITH_WGQUICK=yes
 RUN mkdir -p output && make -C wireguard-tools-${WIREGUARD_TOOLS_VERSION}/src && make install -C wireguard-tools-${WIREGUARD_TOOLS_VERSION}/src
 
+FROM docker.io/cloudtogo/curl-downloader:alpine-3 as wg-go-src
+ARG WIREGUARD_GO_VERSION
+WORKDIR /
+RUN curl -o /tmp/wg.zip -skL https://codeload.github.com/WireGuard/wireguard-go/zip/refs/tags/${WIREGUARD_GO_VERSION} && \
+	mkdir -p /go/src/github.com/WireGuard/ && unzip -d /go/src/github.com/WireGuard/ /tmp/wg.zip
+RUN mv /go/src/github.com/WireGuard/wireguard-go-${WIREGUARD_GO_VERSION} /go/src/github.com/WireGuard/wireguard-go
+
+FROM golang:1.16-alpine as wg-go
+RUN apk update && apk add make && rm -rf /var/cache/apk/*
+WORKDIR /go/src/github.com/WireGuard/wireguard-go
+COPY --from=wg-go-src /go/src/github.com/WireGuard/wireguard-go ./
+ENV DESTDIR=output
+RUN ls -l && make && make install
+
 FROM bash:5
+WORKDIR /
 RUN ln -s /usr/local/bin/bash /bin/bash
 COPY --from=wireguard-tools /root/output /
+COPY --from=wg-go /go/src/github.com/WireGuard/wireguard-go/output /

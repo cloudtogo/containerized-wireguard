@@ -3,6 +3,27 @@
 This project provides a wireguard image that contains the userspace wireguard implementation, `wireguard-go`, wireguard utilites `wg` and `wg-quick`.
 In particular, its image size is less than `10MB` and can work on embedded Linux distros no matter whether the wireguard kernel driver is installed.
 
+Feel free to report issues or request images for new archs.
+
+# Images
+
+Images for different archs(amd64, arm64/v8 and arm32/v7) are published on DockerHub [cloudtogo4edge/wireguard-us](https://hub.docker.com/r/cloudtogo4edge/wireguard-us).
+
+```
+# amd64
+docker pull cloudtogo4edge/wireguard-us:v0.0.20201119-amd64
+
+# arm64v8
+docker pull cloudtogo4edge/wireguard-us:v0.0.20201119-arm64v8
+
+# arm32v7
+docker pull cloudtogo4edge/wireguard-us:v0.0.20201119-arm32v7
+```
+
+## Tags
+
+* **alpine-3.12**: [`v0.0.20201119-amd64`](https://github.com/cloudtogo/containerized-wireguard/blob/master/alpine.amd64/Dockerfile) [`v0.0.20201119-arm64v8`](https://github.com/cloudtogo/containerized-wireguard/blob/master/alpine.arm64v8/Dockerfile) [`v0.0.20201119-arm32v7`](https://github.com/cloudtogo/containerized-wireguard/blob/master/alpine.arm32v7/Dockerfile)
+
 # Usage
 
 The usage is quite easy that needs only 4 steps,

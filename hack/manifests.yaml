@@ -36,7 +36,7 @@ metadata:
     wireguard: server
 spec:
   containers:
-  - image: docker.io/cloudtogo/wireguard-us:v0.0.20201119
+  - image: docker.io/cloudtogo4edge/wireguard-us:v0.0.20201119
     imagePullPolicy: IfNotPresent
     name: wireguard
     ports:
@@ -101,7 +101,7 @@ metadata:
     wireguard: client
 spec:
   containers:
-  - image: docker.io/cloudtogo/wireguard-us:v0.0.20201119
+  - image: docker.io/cloudtogo4edge/wireguard-us:v0.0.20201119
     imagePullPolicy: IfNotPresent
     name: wireguard
     ports:

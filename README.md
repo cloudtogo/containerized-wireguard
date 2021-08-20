@@ -21,6 +21,7 @@ The usage is quite easy that needs only 4 steps,
 1. Mount hostpath `/dev/net/tun`,
 2. Mount wireguard config file to `/etc/wireguard`, say `/etc/wireguard/wg0.conf`,
 3. Set the net link name via environment variable `WG_DEV`,
-4. Start the container with linux capability `NET_ADMIN`.
+4. Start the container with linux capability `NET_ADMIN`,
+5. `hostnetwork(--net=host)` and `privileged(--privileged)` are required if you use a kernel module.
 
 If you already have a Kubernetes cluster, feel free to test with the manifest `hack/manifests.yaml`.
